@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
  * Created by LaunchCode
  */
 @Entity
-public class Cheese {
+public class  Cheese {
 
     @Id
     @GeneratedValue
