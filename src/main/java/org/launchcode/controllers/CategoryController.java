@@ -45,13 +45,11 @@ public class CategoryController {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Category");
-            model.addAttribute(category);
             return "category/add";
         }
 
         categoryDao.save(category);
         return "redirect:";
     }
-
 
 }

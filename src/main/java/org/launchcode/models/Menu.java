@@ -16,7 +16,7 @@ public class Menu {
     private int id;
 
     @NotNull
-    @Size(min=3, max=25)
+    @Size(min=3, max=25, message="Name must be between 3 and 25 characters")
     private String name;
 
     @ManyToMany

@@ -1,10 +1,12 @@
 package org.launchcode.controllers;
 
 import org.launchcode.models.Category;
+import org.launchcode.models.Cheese;
 import org.launchcode.models.Menu;
 import org.launchcode.models.data.CategoryDao;
 import org.launchcode.models.data.CheeseDao;
 import org.launchcode.models.data.MenuDao;
+import org.launchcode.models.forms.AddMenuItemForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,8 +53,6 @@ public class MenuController {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Menu");
-            // Not sure if the next line is necessary to redisplay the input in error - this exists in more than one place...
-            model.addAttribute(menu);
             return "menu/add";
         }
 
@@ -69,14 +69,32 @@ public class MenuController {
     }
 
     @RequestMapping(value = "add-item/{id}", method = RequestMethod.GET)
-    public String displayAddItem(Model model, @PathVariable int id) {
+    public String addItem(Model model, @PathVariable int id) {
 
         Menu menu = menuDao.findOne(id);
+        AddMenuItemForm addMenuItemForm = new AddMenuItemForm(menu, cheeseDao.findAll());
 
         model.addAttribute("title", "Add Item to Menu: " + menu.getName());
-        model.addAttribute("cheeses", cheeseDao.findAll());
+        model.addAttribute("form", addMenuItemForm);
         return "menu/add-item";
 
+    }
+
+    @RequestMapping(value = "add-item", method = RequestMethod.POST)
+    public String addItem(@ModelAttribute @Valid AddMenuItemForm addMenuItemForm,
+                                     Errors errors, Model model) {
+
+        if (errors.hasErrors()) {
+            model.addAttribute("form", addMenuItemForm);
+            return "menu/add-item";
+        }
+
+        Menu menu = menuDao.findOne(addMenuItemForm.getMenuId());
+        Cheese cheese = cheeseDao.findOne(addMenuItemForm.getCheeseId());
+
+        menu.addItem(cheese);
+        menuDao.save(menu);
+        return "redirect:view/" + addMenuItemForm.getMenuId();
     }
 
 }
